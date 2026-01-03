@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import * as authService from '../services/authService';
 import './ProfileSection.css';
 
 const ProfileSection = ({ user }) => {
+  const navigate = useNavigate();
   const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profilePicture, setProfilePicture] = useState('https://via.placeholder.com/150');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [formData, setFormData] = useState({
     fullName: user?.fullName || '',
     email: user?.email || '',
@@ -42,7 +46,7 @@ const ProfileSection = ({ user }) => {
           const userData = response.data.data;
           setFormData(prev => ({
             ...prev,
-            fullName: userData.fullName || '',
+            fullName: userData.fullName || userData.email?.split('@')[0] || '',
             email: userData.email || '',
             employeeId: userData.employeeId || '',
             phone: userData.phone || '',
@@ -141,6 +145,26 @@ const ProfileSection = ({ user }) => {
     toast.info('Changes discarded');
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      setLoading(true);
+      const response = await authService.deleteAccount();
+      
+      if (response.success) {
+        toast.success('Account deleted successfully');
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Delete account error:', error);
+      toast.error(error.response?.data?.message || 'Failed to delete account');
+    } finally {
+      setLoading(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   return (
     <div className="profile-section">
       {loading ? (
@@ -157,24 +181,35 @@ const ProfileSection = ({ user }) => {
           <h3 className="fw-bold mb-1">My Profile</h3>
           <p className="text-muted mb-0">View and manage your profile information</p>
         </div>
-        {!isEditMode && (
-          <button className="btn btn-primary" onClick={() => setIsEditMode(true)}>
-            <i className="bi bi-pencil-square me-2"></i>
-            Edit Profile
-          </button>
-        )}
-        {isEditMode && (
-          <div className="btn-group">
-            <button className="btn btn-success" onClick={handleSave}>
-              <i className="bi bi-check-circle me-2"></i>
-              Save Changes
-            </button>
-            <button className="btn btn-secondary" onClick={handleCancel}>
-              <i className="bi bi-x-circle me-2"></i>
-              Cancel
-            </button>
-          </div>
-        )}
+        <div className="d-flex gap-2">
+          {!isEditMode && (
+            <>
+              <button className="btn btn-primary" onClick={() => setIsEditMode(true)}>
+                <i className="bi bi-pencil-square me-2"></i>
+                Edit Profile
+              </button>
+              <button 
+                className="btn btn-danger" 
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                <i className="bi bi-trash me-2"></i>
+                Delete Account
+              </button>
+            </>
+          )}
+          {isEditMode && (
+            <div className="btn-group">
+              <button className="btn btn-success" onClick={handleSave}>
+                <i className="bi bi-check-circle me-2"></i>
+                Save Changes
+              </button>
+              <button className="btn btn-secondary" onClick={handleCancel}>
+                <i className="bi bi-x-circle me-2"></i>
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="row g-4">
@@ -427,6 +462,68 @@ const ProfileSection = ({ user }) => {
         </div>
       </div>
         </>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header border-0">
+                <h5 className="modal-title text-danger">
+                  <i className="bi bi-exclamation-triangle me-2"></i>
+                  Delete Account
+                </h5>
+                <button 
+                  type="button" 
+                  className="btn-close" 
+                  onClick={() => setShowDeleteConfirm(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p className="mb-3">
+                  <strong>Are you sure you want to delete your account?</strong>
+                </p>
+                <p className="text-muted mb-3">
+                  This action cannot be undone. Your account and all associated data will be permanently deleted.
+                </p>
+                <ul className="list-unstyled text-muted small">
+                  <li>• Your profile information will be removed</li>
+                  <li>• Your attendance records will be deleted</li>
+                  <li>• Your leave requests will be removed</li>
+                  <li>• You will lose access to the system</li>
+                </ul>
+              </div>
+              <div className="modal-footer border-0">
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-danger" 
+                  onClick={handleDeleteAccount}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2"></span>
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-trash me-2"></i>
+                      Yes, Delete My Account
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

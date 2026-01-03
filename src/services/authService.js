@@ -41,4 +41,17 @@ export const getToken = () => {
   return localStorage.getItem('token');
 };
 
+export const deleteAccount = async () => {
+  const token = getToken();
+  const response = await api.delete('/delete-account', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (response.data.success) {
+    logout(); // Clear localStorage after successful deletion
+  }
+  return response.data;
+};
+
 export default api;

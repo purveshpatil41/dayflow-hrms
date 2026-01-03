@@ -6,6 +6,7 @@ import {
   verifyOTP,
   getMe,
   updateProfile,
+  deleteAccount,
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -17,5 +18,6 @@ router.get('/verify-email/:token', verifyEmail);
 router.post('/verify-otp', verifyOTP);
 router.get('/me', protect, getMe);
 router.put('/update-profile', protect, updateProfile);
+router.delete('/delete-account', protect, deleteAccount);
 
 export default router;

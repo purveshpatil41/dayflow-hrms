@@ -400,3 +400,31 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
+
+export const deleteAccount = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Delete the user account
+    await user.destroy();
+
+    res.status(200).json({
+      success: true,
+      message: 'Your account has been permanently deleted',
+    });
+  } catch (error) {
+    console.error('Delete account error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during account deletion',
+      error: error.message,
+    });
+  }
+};
