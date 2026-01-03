@@ -7,6 +7,7 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST || 'localhost',
     dialect: 'mysql',
+    port: 3306,
     logging: false,
     dialectOptions: {
       connectTimeout: 60000,
