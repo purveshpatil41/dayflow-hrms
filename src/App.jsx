@@ -3,6 +3,7 @@ import Auth from './components/Auth';
 import EmployeeDashboard from './pages/EmployeeDashboard';
 import EmployeeProfile from './pages/EmployeeProfile';
 import AdminDashboard from './pages/AdminDashboard';
+import VerifyEmail from './pages/VerifyEmail';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './App.css';
@@ -12,6 +13,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Auth />} />
+        <Route path="/verify-email/:token" element={<VerifyEmail />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
         <Route path="/employee/profile" element={<EmployeeProfile />} />
         <Route path="/employee/attendance" element={<EmployeeDashboard />} />

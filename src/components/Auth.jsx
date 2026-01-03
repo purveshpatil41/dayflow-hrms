@@ -47,7 +47,14 @@ const Auth = () => {
     } catch (error) {
       console.error('Login error:', error);
       console.error('Error response:', error.response);
-      toast.error(error.response?.data?.message || 'Login failed. Please try again.');
+      
+      if (error.response?.data?.emailNotVerified) {
+        toast.error('📧 Email not verified! Please check your inbox and verify your email first.', {
+          autoClose: 7000,
+        });
+      } else {
+        toast.error(error.response?.data?.message || 'Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -59,8 +66,11 @@ const Auth = () => {
     try {
       const response = await authService.register(registerForm);
       if (response.success) {
-        toast.success(response.message);
-        toast.info('Please check your email to verify your account.');
+        toast.success('Registration successful!');
+        toast.info('📧 Verification email sent! Please check your inbox and verify your email before logging in.', {
+          autoClose: 7000,
+          position: 'top-center',
+        });
         setRegisterForm({
           fullName: '',
           employeeId: '',
@@ -68,6 +78,9 @@ const Auth = () => {
           password: '',
           role: 'Employee'
         });
+        setTimeout(() => {
+          setActiveTab('login');
+        }, 2000);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Registration failed. Please try again.');

@@ -289,13 +289,14 @@ export const login = async (req, res) => {
       });
     }
 
-    // Email verification disabled for development
-    // if (!user.isVerified) {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: 'Please verify your email before logging in',
-    //   });
-    // }
+    // Check if email is verified
+    if (!user.isVerified) {
+      return res.status(403).json({
+        success: false,
+        message: 'Please verify your email before logging in. Check your inbox for verification link.',
+        emailNotVerified: true,
+      });
+    }
 
     const isPasswordMatch = await user.matchPassword(password);
     
