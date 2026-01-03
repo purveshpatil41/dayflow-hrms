@@ -1,0 +1,12 @@
+{
+  "build": {
+    "environment": {
+      "NODE_VERSION": "18"
+    }
+  },
+  "deploy": {
+    "restart_policy": {
+      "name": "always"
+    }
+  }
+}
