@@ -1,5 +1,59 @@
+.main-content {
+  flex: 1;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.dashboard-container {
+  max-width: 100%;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  min-height: calc(100vh - 70px);
+}
+
+.stat-card {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-section h2 {
+  color: #2d3748;
+  font-size: 2rem;
+}
+
+.welcome-section p {
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+.card {
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+}
+
 .analytics-card {
   transition: all 0.3s ease;
+  border-radius: 12px;
 }
 
 .analytics-card:hover {
@@ -21,27 +75,31 @@
 }
 
 .table-hover tbody tr {
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .table-hover tbody tr:hover {
   background: #f8f9fa;
-  transform: scale(1.01);
+  transform: scale(1.005);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .leave-request-card {
   transition: all 0.3s ease;
+  border-radius: 10px;
+  margin-bottom: 1rem;
 }
 
 .leave-request-card:hover {
   background: #f8f9fa;
   border-color: #667eea !important;
   transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .payroll-breakdown > div {
   transition: all 0.3s ease;
+  border-radius: 8px;
 }
 
 .payroll-breakdown > div:hover {
@@ -50,8 +108,114 @@
   transform: translateX(5px);
 }
 
+.btn {
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .dashboard-container {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+  
+  .welcome-section h2 {
+    font-size: 1.75rem;
+  }
+  
+  .stat-card .card-body {
+    padding: 1.25rem;
+  }
+}
+
 @media (max-width: 768px) {
+  .dashboard-container {
+    padding: 0.75rem;
+  }
+  
+  .welcome-section h2 {
+    font-size: 1.5rem;
+  }
+  
+  .welcome-section p {
+    font-size: 0.95rem;
+  }
+  
+  .stat-card .card-body {
+    padding: 1rem;
+  }
+  
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .stat-icon i {
+    font-size: 1.5rem !important;
+  }
+  
   .table-responsive {
     font-size: 0.875rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .btn-sm {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.65rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-container {
+    padding: 0.5rem;
+  }
+  
+  .welcome-section {
+    margin-bottom: 1rem !important;
+  }
+  
+  .welcome-section h2 {
+    font-size: 1.25rem;
+  }
+  
+  .welcome-section p {
+    font-size: 0.875rem;
+  }
+  
+  .stat-card h3 {
+    font-size: 1.5rem;
+  }
+  
+  .stat-card .card-body {
+    padding: 0.875rem;
+  }
+  
+  .card-title {
+    font-size: 1rem;
+  }
+  
+  .table {
+    font-size: 0.8rem;
   }
 }
