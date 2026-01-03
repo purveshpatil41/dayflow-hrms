@@ -3,15 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
+import EmployeeList from '../components/EmployeeList';
+import EmployeeDetail from '../components/EmployeeDetail';
+import AttendanceView from '../components/AttendanceView';
+import EmployeeLeaves from '../components/EmployeeLeaves';
 import * as authService from '../services/authService';
 import * as leaveService from '../services/leaveService';
+import * as adminService from '../services/adminService';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [leaveRequests, setLeaveRequests] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [loadingLeaves, setLoadingLeaves] = useState(false);
+  const [activeView, setActiveView] = useState('dashboard');
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
@@ -29,7 +37,19 @@ const AdminDashboard = () => {
 
     setUser(currentUser);
     fetchAllLeaves();
+    fetchEmployees();
   }, [navigate]);
+
+  const fetchEmployees = async () => {
+    try {
+      const response = await adminService.getAllEmployees();
+      if (response.success) {
+        setEmployees(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+    }
+  };
 
   const fetchAllLeaves = async () => {
     try {
@@ -59,12 +79,42 @@ const AdminDashboard = () => {
   };
 
   const menuItems = [
-    { label: 'Dashboard', icon: 'bi-speedometer2', path: '/admin/dashboard' },
-    { label: 'Employees', icon: 'bi-people', path: '/admin/employees' },
-    { label: 'Attendance', icon: 'bi-calendar-check', path: '/admin/attendance' },
-    { label: 'Leave Management', icon: 'bi-calendar-x', path: '/admin/leaves' },
-    { label: 'Payroll', icon: 'bi-wallet2', path: '/admin/payroll' },
-    { label: 'Reports', icon: 'bi-graph-up', path: '/admin/reports' },
+    { 
+      label: 'Dashboard', 
+      icon: 'bi-speedometer2', 
+      path: '/admin/dashboard',
+      onClick: () => setActiveView('dashboard')
+    },
+    { 
+      label: 'Employees', 
+      icon: 'bi-people', 
+      path: '/admin/employees',
+      onClick: () => setActiveView('employees')
+    },
+    { 
+      label: 'Attendance', 
+      icon: 'bi-calendar-check', 
+      path: '/admin/attendance',
+      onClick: () => setActiveView('attendance')
+    },
+    { 
+      label: 'Leave Management', 
+      icon: 'bi-calendar-x', 
+      path: '/admin/leaves',
+      onClick: () => setActiveView('leaves')
+    },
+    { 
+      label: 'Payroll', 
+      icon: 'bi-wallet2', 
+      path: '/admin/payroll',
+      onClick: () => setActiveView('payroll')
+    },
+    { 
+      label: 'Reports', 
+      icon: 'bi-graph-up', 
+      path: '/admin/reports',
+      onClick: () => setActiveView('reports')
+    },
   ];
 
   if (!user) {
@@ -75,30 +125,93 @@ const AdminDashboard = () => {
     </div>;
   }
 
-  const employeesData = [
-    { id: 'EMP001', name: 'John Doe', dept: 'Engineering', status: 'Present' },
-    { id: 'EMP002', name: 'Jane Smith', dept: 'Marketing', status: 'Present' },
-    { id: 'EMP003', name: 'Mike Johnson', dept: 'Sales', status: 'Leave' },
-    { id: 'EMP004', name: 'Sarah Williams', dept: 'HR', status: 'Present' },
-    { id: 'EMP005', name: 'David Brown', dept: 'Engineering', status: 'Absent' },
-  ];
-
   const pendingLeavesCount = leaveRequests.length;
 
-  return (
-    <div className="d-flex">
-      <Sidebar menuItems={menuItems} role="admin" />
-      
-      <div className="main-content">
-        <Navbar userName={user.email} userRole="HR Admin" />
-        
-        <div className="dashboard-container p-4">
-          <div className="welcome-section mb-4">
-            <h2 className="fw-bold mb-1">Welcome, HR Admin 👋</h2>
-            <p className="text-muted">Manage employees and workflows efficiently</p>
-          </div>
+  const handleSelectEmployee = (employeeId) => {
+    setSelectedEmployeeId(employeeId);
+    setActiveView('employeeDetail');
+  };
 
+  const handleBackToList = () => {
+    setSelectedEmployeeId(null);
+    setActiveView('employees');
+  };
+
+  const handleEmployeeUpdate = () => {
+    // Refresh any needed data after employee update
+    fetchAllLeaves();
+  };
+
+  const renderContent = () => {
+    switch(activeView) {
+      case 'employees':
+        return (
           <div className="row g-4">
+            <div className="col-12">
+              <EmployeeList 
+                onSelectEmployee={handleSelectEmployee}
+                selectedEmployeeId={selectedEmployeeId}
+              />
+            </div>
+          </div>
+        );
+      
+      case 'employeeDetail':
+        return (
+          <div className="row g-4">
+            <div className="col-lg-8">
+              <EmployeeDetail 
+                employeeId={selectedEmployeeId}
+                onBack={handleBackToList}
+                onUpdate={handleEmployeeUpdate}
+              />
+            </div>
+            <div className="col-lg-4">
+              <div className="mb-4">
+                <AttendanceView employeeId={selectedEmployeeId} />
+              </div>
+              <div>
+                <EmployeeLeaves employeeId={selectedEmployeeId} />
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'attendance':
+        return (
+          <div className="row g-4">
+            <div className="col-lg-4">
+              <EmployeeList 
+                onSelectEmployee={setSelectedEmployeeId}
+                selectedEmployeeId={selectedEmployeeId}
+              />
+            </div>
+            <div className="col-lg-8">
+              <AttendanceView employeeId={selectedEmployeeId} />
+            </div>
+          </div>
+        );
+
+      case 'leaves':
+        return (
+          <div className="row g-4">
+            <div className="col-lg-4">
+              <EmployeeList 
+                onSelectEmployee={setSelectedEmployeeId}
+                selectedEmployeeId={selectedEmployeeId}
+              />
+            </div>
+            <div className="col-lg-8">
+              <EmployeeLeaves employeeId={selectedEmployeeId} />
+            </div>
+          </div>
+        );
+
+      case 'dashboard':
+      default:
+        return (
+          <>
+            <div className="row g-4">{/* Stats cards */}
             <div className="col-md-6 col-lg-3">
               <div className="stat-card card border-0 shadow-sm">
                 <div className="card-body">
@@ -187,9 +300,12 @@ const AdminDashboard = () => {
                       <i className="bi bi-people me-2 text-primary"></i>
                       Employees Overview
                     </h5>
-                    <button className="btn btn-primary btn-sm">
+                    <button 
+                      className="btn btn-primary btn-sm"
+                      onClick={() => setActiveView('employees')}
+                    >
                       <i className="bi bi-plus-circle me-2"></i>
-                      Add Employee
+                      View All
                     </button>
                   </div>
                   
@@ -197,46 +313,56 @@ const AdminDashboard = () => {
                     <table className="table table-hover align-middle">
                       <thead className="table-light">
                         <tr>
+                          <th>Profile</th>
                           <th>Employee ID</th>
                           <th>Name</th>
                           <th>Department</th>
-                          <th>Status</th>
                           <th>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {employeesData.map((emp) => (
+                        {employees.slice(0, 5).map((emp) => (
                           <tr key={emp.id}>
-                            <td className="fw-semibold">{emp.id}</td>
                             <td>
-                              <div className="d-flex align-items-center gap-2">
-                                <div className="avatar-sm bg-gradient rounded-circle d-flex align-items-center justify-content-center text-white">
-                                  {emp.name.charAt(0)}
+                              {emp.profilePicture ? (
+                                <img 
+                                  src={emp.profilePicture} 
+                                  alt={emp.fullName} 
+                                  className="rounded-circle"
+                                  style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                />
+                              ) : (
+                                <div className="avatar-sm bg-gradient rounded-circle d-flex align-items-center justify-content-center text-white" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                                  {emp.fullName ? emp.fullName.charAt(0).toUpperCase() : 'U'}
                                 </div>
-                                <span>{emp.name}</span>
-                              </div>
+                              )}
                             </td>
-                            <td>{emp.dept}</td>
+                            <td className="fw-semibold">{emp.employeeId}</td>
+                            <td>{emp.fullName || 'N/A'}</td>
                             <td>
-                              <span className={`badge ${
-                                emp.status === 'Present' ? 'bg-success' : 
-                                emp.status === 'Leave' ? 'bg-warning text-dark' : 'bg-danger'
-                              }`}>
-                                {emp.status}
+                              <span className="badge bg-info">
+                                {emp.department || 'Not Set'}
                               </span>
                             </td>
                             <td>
                               <div className="btn-group btn-group-sm">
-                                <button className="btn btn-outline-primary">
+                                <button 
+                                  className="btn btn-outline-primary"
+                                  onClick={() => handleSelectEmployee(emp.id)}
+                                >
                                   <i className="bi bi-eye"></i>
-                                </button>
-                                <button className="btn btn-outline-secondary">
-                                  <i className="bi bi-pencil"></i>
                                 </button>
                               </div>
                             </td>
                           </tr>
                         ))}
+                        {employees.length === 0 && (
+                          <tr>
+                            <td colSpan="5" className="text-center text-muted py-4">
+                              No employees registered yet
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -344,7 +470,10 @@ const AdminDashboard = () => {
                     </div>
                   )}
 
-                  <button className="btn btn-outline-primary w-100 mt-2">
+                  <button 
+                    className="btn btn-outline-primary w-100 mt-2"
+                    onClick={() => setActiveView('leaves')}
+                  >
                     View All Requests
                   </button>
                 </div>
@@ -403,6 +532,25 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
+          </>
+        );
+    }
+  };
+
+  return (
+    <div className="d-flex">
+      <Sidebar menuItems={menuItems} role="admin" activeView={activeView} />
+      
+      <div className="main-content">
+        <Navbar userName={user.email} userRole="HR Admin" />
+        
+        <div className="dashboard-container p-4">
+          <div className="welcome-section mb-4">
+            <h2 className="fw-bold mb-1">Welcome, HR Admin 👋</h2>
+            <p className="text-muted">Manage employees and workflows efficiently</p>
+          </div>
+
+          {renderContent()}
         </div>
       </div>
     </div>

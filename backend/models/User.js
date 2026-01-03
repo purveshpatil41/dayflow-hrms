@@ -58,6 +58,28 @@ const User = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    department: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    jobTitle: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    joiningDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    basicSalary: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      defaultValue: 0,
+    },
+    allowances: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      defaultValue: 0,
+    },
     isVerified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
