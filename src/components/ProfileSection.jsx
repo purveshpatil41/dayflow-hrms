@@ -146,36 +146,60 @@ const ProfileSection = ({ user }) => {
   };
 
   const handleDeleteAccount = async () => {
+    console.log('🗑️ handleDeleteAccount called');
+    console.log('Current loading state:', loading);
+    console.log('Show delete confirm:', showDeleteConfirm);
+    
+    if (loading) {
+      console.log('Already loading, preventing duplicate calls');
+      return;
+    }
+
     try {
       setLoading(true);
       console.log('Starting account deletion...');
+      console.log('Token exists:', !!authService.getToken());
+      
+      // Show immediate feedback
+      toast.info('Processing account deletion...', { autoClose: 2000 });
       
       const response = await authService.deleteAccount();
       console.log('Delete response:', response);
       
-      if (response.success) {
-        console.log('Account deleted successfully');
+      if (response && response.success) {
+        console.log('✅ Account deleted successfully');
         toast.success('🗑️ Account deleted successfully! Redirecting to login page...', {
           autoClose: 2000,
           position: 'top-center',
         });
         
-        // Clear all localStorage data completely
+        // Clear all data
+        console.log('Clearing all storage...');
         localStorage.clear();
         sessionStorage.clear();
         
-        // Force redirect to home page after a short delay
+        // Force redirect
+        console.log('Redirecting to home page...');
         setTimeout(() => {
-          window.location.replace('/'); // Use replace to prevent back navigation
+          console.log('Executing redirect...');
+          window.location.replace('/');
         }, 1500);
       } else {
-        throw new Error(response.message || 'Account deletion failed');
+        console.error('❌ Delete response unsuccessful:', response);
+        throw new Error(response?.message || 'Account deletion failed - no success response');
       }
     } catch (error) {
-      console.error('Delete account error:', error);
+      console.error('❌ Delete account error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      
       toast.error(`❌ ${error.response?.data?.message || error.message || 'Failed to delete account'}`, {
         autoClose: 5000,
       });
+      
       setLoading(false);
       setShowDeleteConfirm(false);
     }
@@ -206,7 +230,10 @@ const ProfileSection = ({ user }) => {
               </button>
               <button 
                 className="btn btn-danger" 
-                onClick={() => setShowDeleteConfirm(true)}
+                onClick={() => {
+                  console.log('🗑️ Delete Account button clicked');
+                  setShowDeleteConfirm(true);
+                }}
               >
                 <i className="bi bi-trash me-2"></i>
                 Delete Account
@@ -521,7 +548,10 @@ const ProfileSection = ({ user }) => {
                 <button 
                   type="button" 
                   className="btn btn-danger" 
-                  onClick={handleDeleteAccount}
+                  onClick={() => {
+                    console.log('🚨 Modal delete button clicked');
+                    handleDeleteAccount();
+                  }}
                   disabled={loading}
                 >
                   {loading ? (

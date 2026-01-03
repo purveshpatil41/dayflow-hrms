@@ -42,16 +42,34 @@ export const getToken = () => {
 };
 
 export const deleteAccount = async () => {
-  const token = getToken();
-  const response = await api.delete('/delete-account', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  if (response.data.success) {
-    logout(); // Clear localStorage after successful deletion
+  try {
+    const token = getToken();
+    console.log('Delete account - Token:', token ? 'Present' : 'Missing');
+    
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await api.delete('/delete-account', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    
+    console.log('Delete account response:', response.data);
+    
+    if (response.data.success) {
+      logout(); // Clear localStorage after successful deletion
+    }
+    return response.data;
+  } catch (error) {
+    console.error('Delete account service error:', error);
+    if (error.response) {
+      console.error('Error response data:', error.response.data);
+      console.error('Error status:', error.response.status);
+    }
+    throw error;
   }
-  return response.data;
 };
 
 export default api;
