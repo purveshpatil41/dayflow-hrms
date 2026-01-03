@@ -27,6 +27,14 @@ const Auth = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    // Validate email format
+    if (!validateEmail(loginForm.email)) {
+      toast.error('❌ Please enter a correct email address (e.g., user@gmail.com)');
+      setLoading(false);
+      return;
+    }
+
     try {
       console.log('Attempting login for:', loginForm.email);
       const response = await authService.login(loginForm);
@@ -48,29 +56,40 @@ const Auth = () => {
       console.error('Login error:', error);
       console.error('Error response:', error.response);
       
-      if (error.response?.data?.emailNotVerified) {
-        toast.error('📧 Email not verified! Please check your inbox and verify your email first.', {
-          autoClose: 7000,
-        });
-      } else {
-        toast.error(error.response?.data?.message || 'Login failed. Please try again.');
-      }
+      toast.error(error.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  // Email validation function
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    // Validate email format
+    if (!validateEmail(registerForm.email)) {
+      toast.error('❌ Please enter a correct email address (e.g., user@gmail.com)');
+      setLoading(false);
+      return;
+    }
+
+    // Validate password length
+    if (registerForm.password.length < 6) {
+      toast.error('❌ Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await authService.register(registerForm);
       if (response.success) {
-        toast.success('Registration successful!');
-        toast.info('📧 Verification email sent! Please check your inbox and verify your email before logging in.', {
-          autoClose: 7000,
-          position: 'top-center',
-        });
+        toast.success('✅ Registration successful! You can now login.');
         setRegisterForm({
           fullName: '',
           employeeId: '',
@@ -83,7 +102,26 @@ const Auth = () => {
         }, 2000);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
+      console.error('Registration error:', error.response);
+      console.error('Error message:', error.response?.data?.message);
+      console.error('Full error:', error);
+      
+      const errorMessage = error.response?.data?.message || '';
+      
+      // More specific check for duplicate email/employee ID errors
+      if (errorMessage.includes('User already exists with this email') || 
+          errorMessage.includes('email already exists') ||
+          errorMessage.includes('Email already registered')) {
+        toast.error('📧 This Gmail is already registered! Please use a different email or try logging in.');
+      } else if (errorMessage.includes('User already exists with this employee ID') || 
+                 errorMessage.includes('employeeId already exists')) {
+        toast.error('🆔 This Employee ID is already taken! Please use a different Employee ID.');
+      } else if (errorMessage.includes('Password must be at least 6 characters')) {
+        toast.error('❌ Password must be at least 6 characters long');
+      } else {
+        // Show the actual error message from server
+        toast.error(errorMessage || 'Registration failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

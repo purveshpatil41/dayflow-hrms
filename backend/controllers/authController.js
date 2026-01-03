@@ -32,103 +32,27 @@ export const register = async (req, res) => {
       });
     }
 
-    const verificationToken = jwt.sign(
-      { email },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-
-    const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
-
+    // Create user with verified status (no email verification needed)
     const user = await User.create({
       fullName,
       employeeId,
       email,
       password,
       role: role || 'Employee',
-      verificationToken,
-      otp,
-      otpExpiry,
-      isVerified: false,
+      isVerified: true, // Set to true immediately
+      verificationToken: null,
+      otp: null,
+      otpExpiry: null,
     });
-
-    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
-
-    const emailMessage = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-          .otp-box { background: white; border: 2px dashed #667eea; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px; }
-          .otp-code { font-size: 32px; font-weight: bold; color: #667eea; letter-spacing: 5px; }
-          .button { display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; margin: 20px 0; }
-          .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>Welcome to Dayflow</h1>
-            <p>Every workday, perfectly aligned.</p>
-          </div>
-          <div class="content">
-            <h2>Verify Your Account</h2>
-            <p>Hello <strong>${fullName}</strong>,</p>
-            <p>Thank you for registering with Dayflow HRMS. To complete your registration, please verify your email address.</p>
-            
-            <div style="text-align: center;">
-              <a href="${verificationUrl}" class="button">Verify Email Address</a>
-            </div>
-            
-            <p style="text-align: center; margin: 20px 0;">OR</p>
-            
-            <p>Use this OTP code to verify your account:</p>
-            <div class="otp-box">
-              <div class="otp-code">${otp}</div>
-              <p style="margin-top: 10px; color: #666;">This OTP is valid for 10 minutes</p>
-            </div>
-            
-            <p><strong>Account Details:</strong></p>
-            <ul>
-              <li>Employee ID: ${employeeId}</li>
-              <li>Email: ${email}</li>
-              <li>Role: ${role || 'Employee'}</li>
-            </ul>
-            
-            <p style="color: #666; font-size: 14px;">If you didn't create this account, please ignore this email.</p>
-          </div>
-          <div class="footer">
-            <p>&copy; 2026 Dayflow HRMS. All rights reserved.</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-
-    try {
-      await sendEmail({
-        email: user.email,
-        subject: 'Verify your Dayflow account',
-        message: emailMessage,
-      });
-    } catch (emailError) {
-      console.log('Email sending failed, but user created');
-    }
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful! Please check your email to verify your account.',
+      message: 'Registration successful! You can now login.',
       data: {
         employeeId: user.employeeId,
         email: user.email,
+        fullName: user.fullName,
         role: user.role,
-        otp: otp,
-        verificationToken: verificationToken,
       },
     });
   } catch (error) {
@@ -289,15 +213,8 @@ export const login = async (req, res) => {
       });
     }
 
-    // Check if email is verified
-    if (!user.isVerified) {
-      return res.status(403).json({
-        success: false,
-        message: 'Please verify your email before logging in. Check your inbox for verification link.',
-        emailNotVerified: true,
-      });
-    }
-
+    // Email verification disabled - users can login directly
+    
     const isPasswordMatch = await user.matchPassword(password);
     
     console.log('Password match result:', isPasswordMatch);

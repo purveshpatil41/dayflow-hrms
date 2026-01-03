@@ -10,7 +10,6 @@ const ProfileSection = ({ user }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profilePicture, setProfilePicture] = useState('https://via.placeholder.com/150');
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [formData, setFormData] = useState({
     fullName: user?.fullName || '',
     email: user?.email || '',
@@ -145,66 +144,6 @@ const ProfileSection = ({ user }) => {
     toast.info('Changes discarded');
   };
 
-  const handleDeleteAccount = async () => {
-    console.log('🗑️ handleDeleteAccount called');
-    console.log('Current loading state:', loading);
-    console.log('Show delete confirm:', showDeleteConfirm);
-    
-    if (loading) {
-      console.log('Already loading, preventing duplicate calls');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      console.log('Starting account deletion...');
-      console.log('Token exists:', !!authService.getToken());
-      
-      // Show immediate feedback
-      toast.info('Processing account deletion...', { autoClose: 2000 });
-      
-      const response = await authService.deleteAccount();
-      console.log('Delete response:', response);
-      
-      if (response && response.success) {
-        console.log('✅ Account deleted successfully');
-        toast.success('🗑️ Account deleted successfully! Redirecting to login page...', {
-          autoClose: 2000,
-          position: 'top-center',
-        });
-        
-        // Clear all data
-        console.log('Clearing all storage...');
-        localStorage.clear();
-        sessionStorage.clear();
-        
-        // Force redirect
-        console.log('Redirecting to home page...');
-        setTimeout(() => {
-          console.log('Executing redirect...');
-          window.location.replace('/');
-        }, 1500);
-      } else {
-        console.error('❌ Delete response unsuccessful:', response);
-        throw new Error(response?.message || 'Account deletion failed - no success response');
-      }
-    } catch (error) {
-      console.error('❌ Delete account error:', error);
-      console.error('Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
-      
-      toast.error(`❌ ${error.response?.data?.message || error.message || 'Failed to delete account'}`, {
-        autoClose: 5000,
-      });
-      
-      setLoading(false);
-      setShowDeleteConfirm(false);
-    }
-  };
-
   return (
     <div className="profile-section">
       {loading ? (
@@ -227,16 +166,6 @@ const ProfileSection = ({ user }) => {
               <button className="btn btn-primary" onClick={() => setIsEditMode(true)}>
                 <i className="bi bi-pencil-square me-2"></i>
                 Edit Profile
-              </button>
-              <button 
-                className="btn btn-danger" 
-                onClick={() => {
-                  console.log('🗑️ Delete Account button clicked');
-                  setShowDeleteConfirm(true);
-                }}
-              >
-                <i className="bi bi-trash me-2"></i>
-                Delete Account
               </button>
             </>
           )}
@@ -507,70 +436,6 @@ const ProfileSection = ({ user }) => {
         </>
       )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header border-0">
-                <h5 className="modal-title text-danger">
-                  <i className="bi bi-exclamation-triangle me-2"></i>
-                  Delete Account
-                </h5>
-                <button 
-                  type="button" 
-                  className="btn-close" 
-                  onClick={() => setShowDeleteConfirm(false)}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <p className="mb-3">
-                  <strong>Are you sure you want to delete your account?</strong>
-                </p>
-                <p className="text-muted mb-3">
-                  This action cannot be undone. Your account and all associated data will be permanently deleted.
-                </p>
-                <ul className="list-unstyled text-muted small">
-                  <li>• Your profile information will be removed</li>
-                  <li>• Your attendance records will be deleted</li>
-                  <li>• Your leave requests will be removed</li>
-                  <li>• You will lose access to the system</li>
-                </ul>
-              </div>
-              <div className="modal-footer border-0">
-                <button 
-                  type="button" 
-                  className="btn btn-secondary" 
-                  onClick={() => setShowDeleteConfirm(false)}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="button" 
-                  className="btn btn-danger" 
-                  onClick={() => {
-                    console.log('🚨 Modal delete button clicked');
-                    handleDeleteAccount();
-                  }}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2"></span>
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <i className="bi bi-trash me-2"></i>
-                      Yes, Delete My Account
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
