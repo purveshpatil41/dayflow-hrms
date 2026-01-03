@@ -403,22 +403,45 @@ export const updateProfile = async (req, res) => {
 
 export const deleteAccount = async (req, res) => {
   try {
+    console.log('Delete account request for user ID:', req.user.id);
+    
     const user = await User.findByPk(req.user.id);
 
     if (!user) {
+      console.log('User not found for deletion:', req.user.id);
       return res.status(404).json({
         success: false,
         message: 'User not found',
       });
     }
 
-    // Delete the user account
-    await user.destroy();
+    console.log('Deleting user:', user.email);
 
-    res.status(200).json({
-      success: true,
-      message: 'Your account has been permanently deleted',
+    // Delete the user account from database
+    const deletedRows = await User.destroy({
+      where: { id: req.user.id }
     });
+
+    console.log('Deleted rows:', deletedRows);
+
+    if (deletedRows > 0) {
+      console.log('Account successfully deleted for:', user.email);
+      res.status(200).json({
+        success: true,
+        message: 'Your account has been permanently deleted',
+        deletedUser: {
+          id: user.id,
+          email: user.email,
+          employeeId: user.employeeId
+        }
+      });
+    } else {
+      console.log('No rows deleted for user:', req.user.id);
+      res.status(400).json({
+        success: false,
+        message: 'Account could not be deleted',
+      });
+    }
   } catch (error) {
     console.error('Delete account error:', error);
     res.status(500).json({

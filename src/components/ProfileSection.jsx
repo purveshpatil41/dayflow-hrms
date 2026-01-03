@@ -148,18 +148,34 @@ const ProfileSection = ({ user }) => {
   const handleDeleteAccount = async () => {
     try {
       setLoading(true);
+      console.log('Starting account deletion...');
+      
       const response = await authService.deleteAccount();
+      console.log('Delete response:', response);
       
       if (response.success) {
-        toast.success('Account deleted successfully');
+        console.log('Account deleted successfully');
+        toast.success('🗑️ Account deleted successfully! Redirecting to login page...', {
+          autoClose: 2000,
+          position: 'top-center',
+        });
+        
+        // Clear all localStorage data completely
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Force redirect to home page after a short delay
         setTimeout(() => {
-          navigate('/');
-        }, 2000);
+          window.location.replace('/'); // Use replace to prevent back navigation
+        }, 1500);
+      } else {
+        throw new Error(response.message || 'Account deletion failed');
       }
     } catch (error) {
       console.error('Delete account error:', error);
-      toast.error(error.response?.data?.message || 'Failed to delete account');
-    } finally {
+      toast.error(`❌ ${error.response?.data?.message || error.message || 'Failed to delete account'}`, {
+        autoClose: 5000,
+      });
       setLoading(false);
       setShowDeleteConfirm(false);
     }
