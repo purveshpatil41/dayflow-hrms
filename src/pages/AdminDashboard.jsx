@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar';
 import EmployeeList from '../components/EmployeeList';
 import EmployeeDetail from '../components/EmployeeDetail';
 import AttendanceView from '../components/AttendanceView';
+import MarkAttendance from '../components/MarkAttendance';
 import EmployeeLeaves from '../components/EmployeeLeaves';
 import * as authService from '../services/authService';
 import * as leaveService from '../services/leaveService';
@@ -20,6 +21,7 @@ const AdminDashboard = () => {
   const [loadingLeaves, setLoadingLeaves] = useState(false);
   const [activeView, setActiveView] = useState('dashboard');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
@@ -180,14 +182,8 @@ const AdminDashboard = () => {
       case 'attendance':
         return (
           <div className="row g-4">
-            <div className="col-lg-4">
-              <EmployeeList 
-                onSelectEmployee={setSelectedEmployeeId}
-                selectedEmployeeId={selectedEmployeeId}
-              />
-            </div>
-            <div className="col-lg-8">
-              <AttendanceView employeeId={selectedEmployeeId} />
+            <div className="col-12">
+              <MarkAttendance />
             </div>
           </div>
         );
@@ -313,7 +309,6 @@ const AdminDashboard = () => {
                     <table className="table table-hover align-middle">
                       <thead className="table-light">
                         <tr>
-                          <th>Profile</th>
                           <th>Employee ID</th>
                           <th>Name</th>
                           <th>Department</th>
@@ -323,20 +318,6 @@ const AdminDashboard = () => {
                       <tbody>
                         {employees.slice(0, 5).map((emp) => (
                           <tr key={emp.id}>
-                            <td>
-                              {emp.profilePicture ? (
-                                <img 
-                                  src={emp.profilePicture} 
-                                  alt={emp.fullName} 
-                                  className="rounded-circle"
-                                  style={{ width: '35px', height: '35px', objectFit: 'cover' }}
-                                />
-                              ) : (
-                                <div className="avatar-sm bg-gradient rounded-circle d-flex align-items-center justify-content-center text-white" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                                  {emp.fullName ? emp.fullName.charAt(0).toUpperCase() : 'U'}
-                                </div>
-                              )}
-                            </td>
                             <td className="fw-semibold">{emp.employeeId}</td>
                             <td>{emp.fullName || 'N/A'}</td>
                             <td>
@@ -358,7 +339,7 @@ const AdminDashboard = () => {
                         ))}
                         {employees.length === 0 && (
                           <tr>
-                            <td colSpan="5" className="text-center text-muted py-4">
+                            <td colSpan="4" className="text-center text-muted py-4">
                               No employees registered yet
                             </td>
                           </tr>
@@ -539,14 +520,43 @@ const AdminDashboard = () => {
 
   return (
     <div className="d-flex">
-      <Sidebar menuItems={menuItems} role="admin" activeView={activeView} />
+      <Sidebar 
+        menuItems={menuItems} 
+        role="admin" 
+        activeView={activeView}
+        isMobileOpen={isMobileSidebarOpen}
+        onClose={() => setIsMobileSidebarOpen(false)}
+      />
       
       <div className="main-content">
-        <Navbar userName={user.email} userRole="HR Admin" />
+        <Navbar userName={user.fullName || user.email} userRole="HR Admin" />
+        
+        {/* Mobile Toggle Button */}
+        <button
+          className="mobile-sidebar-toggle"
+          onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+          style={{
+            position: 'fixed',
+            top: '15px',
+            left: '15px',
+            zIndex: '998',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '10px 15px',
+            color: 'white',
+            fontSize: '20px',
+            cursor: 'pointer',
+            display: 'none',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+          }}
+        >
+          <i className="bi bi-list"></i>
+        </button>
         
         <div className="dashboard-container p-4">
           <div className="welcome-section mb-4">
-            <h2 className="fw-bold mb-1">Welcome, HR Admin 👋</h2>
+            <h2 className="fw-bold mb-1">Welcome, {user.fullName || 'HR Admin'} 👋</h2>
             <p className="text-muted">Manage employees and workflows efficiently</p>
           </div>
 

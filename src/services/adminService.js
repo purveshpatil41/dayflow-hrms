@@ -56,3 +56,27 @@ export const getEmployeeLeaves = async (id) => {
     throw error.response?.data || { message: 'Failed to fetch leaves' };
   }
 };
+
+export const markAttendance = async (employeeId, date, status) => {
+  try {
+    const response = await axios.post(`${API_URL}/attendance/mark`, 
+      { employeeId, date, status }, 
+      getAuthHeader()
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to mark attendance' };
+  }
+};
+
+export const markBulkAttendance = async (attendanceRecords) => {
+  try {
+    const response = await axios.post(`${API_URL}/attendance/mark-bulk`, 
+      { attendanceRecords }, 
+      getAuthHeader()
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to mark bulk attendance' };
+  }
+};

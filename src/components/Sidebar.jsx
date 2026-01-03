@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import * as authService from '../services/authService';
 import './Sidebar.css';
 
-const Sidebar = ({ menuItems, role, activeView = 'dashboard' }) => {
+const Sidebar = ({ menuItems, role, activeView = 'dashboard', isMobileOpen = false, onClose }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -11,19 +11,48 @@ const Sidebar = ({ menuItems, role, activeView = 'dashboard' }) => {
     navigate('/');
   };
 
+  const handleItemClick = (item) => {
+    if (item.onClick) {
+      item.onClick();
+    }
+    // Close sidebar on mobile after clicking
+    if (onClose && window.innerWidth <= 768) {
+      onClose();
+    }
+  };
+
   return (
-    <div 
-      className="sidebar shadow-sm" 
-      style={{ 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        width: '280px',
-        minHeight: '100vh',
-        position: 'fixed',
-        left: '0',
-        top: '0',
-        zIndex: '1000'
-      }}
-    >
+    <>
+      {/* Mobile overlay */}
+      {isMobileOpen && (
+        <div 
+          className="sidebar-overlay"
+          onClick={onClose}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            zIndex: '999',
+            display: 'none'
+          }}
+        />
+      )}
+      
+      <div 
+        className={`sidebar shadow-sm ${isMobileOpen ? 'sidebar-open' : ''}`}
+        style={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          width: '280px',
+          minHeight: '100vh',
+          position: 'fixed',
+          left: '0',
+          top: '0',
+          zIndex: '1000'
+        }}
+      >
       <div className="sidebar-header p-4 border-bottom" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
         <h4 className="mb-0 fw-bold" style={{ color: '#ffffff' }}>Dayflow</h4>
         <p className="mb-0 small" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>HRMS Portal</p>
@@ -39,9 +68,7 @@ const Sidebar = ({ menuItems, role, activeView = 'dashboard' }) => {
               key={index}
               onClick={(e) => {
                 e.preventDefault();
-                if (item.onClick) {
-                  item.onClick();
-                }
+                handleItemClick(item);
               }}
               className={`sidebar-item d-flex align-items-center gap-3 p-3 rounded mb-2 text-decoration-none ${isActive ? 'active' : ''}`}
               style={{ 
@@ -69,6 +96,7 @@ const Sidebar = ({ menuItems, role, activeView = 'dashboard' }) => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

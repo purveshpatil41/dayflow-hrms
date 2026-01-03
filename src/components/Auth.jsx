@@ -8,6 +8,7 @@ const Auth = () => {
   const [activeTab, setActiveTab] = useState('login');
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [registerForm, setRegisterForm] = useState({
+    fullName: '',
     employeeId: '',
     email: '',
     password: '',
@@ -61,6 +62,7 @@ const Auth = () => {
         toast.success(response.message);
         toast.info('Please check your email to verify your account.');
         setRegisterForm({
+          fullName: '',
           employeeId: '',
           email: '',
           password: '',
@@ -166,6 +168,22 @@ const Auth = () => {
             <form className="auth-form" onSubmit={handleRegisterSubmit}>
               <h2 className="form-title">Create Account</h2>
               <p className="form-subtitle">Register to get started with Dayflow</p>
+
+              <div className="form-group">
+                <label htmlFor="register-fullname" className="form-label">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  id="register-fullname"
+                  name="fullName"
+                  className="form-control"
+                  placeholder="Enter your full name"
+                  value={registerForm.fullName}
+                  onChange={handleRegisterChange}
+                  required
+                />
+              </div>
 
               <div className="form-group">
                 <label htmlFor="register-empid" className="form-label">

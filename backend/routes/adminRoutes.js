@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllEmployees, getEmployeeById, updateEmployee, getEmployeeAttendance, getEmployeeLeaves } from '../controllers/adminController.js';
+import { getAllEmployees, getEmployeeById, updateEmployee, getEmployeeAttendance, getEmployeeLeaves, markAttendance, markBulkAttendance } from '../controllers/adminController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -21,5 +21,7 @@ router.get('/employees/:id', protect, authorize('Admin', 'HR'), getEmployeeById)
 router.put('/employees/:id', protect, authorize('Admin', 'HR'), updateEmployee);
 router.get('/employees/:id/attendance', protect, authorize('Admin', 'HR'), getEmployeeAttendance);
 router.get('/employees/:id/leaves', protect, authorize('Admin', 'HR'), getEmployeeLeaves);
+router.post('/attendance/mark', protect, authorize('Admin', 'HR'), markAttendance);
+router.post('/attendance/mark-bulk', protect, authorize('Admin', 'HR'), markBulkAttendance);
 
 export default router;

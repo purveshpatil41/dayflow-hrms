@@ -1,7 +1,7 @@
 const AttendanceSection = () => {
   return (
     <div className="attendance-section p-4">
-      <h3 className="fw-bold mb-4">Attendance Management</h3>
+      <h3 className="fw-bold mb-4">My Attendance</h3>
       
       <div className="row g-4 mb-4">
         <div className="col-md-3">
@@ -45,29 +45,9 @@ const AttendanceSection = () => {
       <div className="card border-0 shadow-sm">
         <div className="card-body p-4">
           <h5 className="fw-bold mb-4">Attendance History</h5>
-          <div className="table-responsive">
-            <table className="table table-hover align-middle">
-              <thead className="table-light">
-                <tr>
-                  <th>Date</th>
-                  <th>Check In</th>
-                  <th>Check Out</th>
-                  <th>Working Hours</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...Array(10)].map((_, i) => (
-                  <tr key={i}>
-                    <td>Jan {i + 1}, 2026</td>
-                    <td>9:00 AM</td>
-                    <td>6:00 PM</td>
-                    <td>9 hours</td>
-                    <td><span className="badge bg-success">Present</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="text-center text-muted py-5">
+            <i className="bi bi-calendar-check fs-1 mb-3 d-block"></i>
+            <p>Attendance tracking coming soon</p>
           </div>
         </div>
       </div>

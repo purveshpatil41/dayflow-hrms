@@ -32,9 +32,9 @@ const Navbar = ({ userName, userRole }) => {
               <div className="fw-semibold small" style={{ color: '#ffffff' }}>{userName}</div>
               <div style={{ fontSize: '0.75rem', color: '#ffffff', opacity: '0.85' }}>{userRole}</div>
             </div>
-            <div className="dropdown">
-              <button
-                className="btn rounded-circle d-flex align-items-center justify-content-center"
+            <div>
+              <div
+                className="rounded-circle d-flex align-items-center justify-content-center"
                 style={{ 
                   width: '40px', 
                   height: '40px',
@@ -42,17 +42,9 @@ const Navbar = ({ userName, userRole }) => {
                   border: 'none',
                   color: '#ffffff'
                 }}
-                onClick={() => setShowDropdown(!showDropdown)}
               >
                 <i className="bi bi-person-circle fs-5" style={{ color: '#ffffff' }}></i>
-              </button>
-              {showDropdown && (
-                <div className="dropdown-menu dropdown-menu-end show" style={{ position: 'absolute', right: 0 }}>
-                  <button className="dropdown-item" onClick={handleLogout}>
-                    <i className="bi bi-box-arrow-right me-2"></i>Logout
-                  </button>
-                </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

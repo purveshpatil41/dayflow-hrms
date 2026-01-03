@@ -10,9 +10,9 @@ const generateOTP = () => {
 
 export const register = async (req, res) => {
   try {
-    const { employeeId, email, password, role } = req.body;
+    const { fullName, employeeId, email, password, role } = req.body;
 
-    if (!employeeId || !email || !password) {
+    if (!fullName || !employeeId || !email || !password) {
       return res.status(400).json({
         success: false,
         message: 'Please provide all required fields',
@@ -42,6 +42,7 @@ export const register = async (req, res) => {
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
     const user = await User.create({
+      fullName,
       employeeId,
       email,
       password,
@@ -77,7 +78,7 @@ export const register = async (req, res) => {
           </div>
           <div class="content">
             <h2>Verify Your Account</h2>
-            <p>Hello <strong>${employeeId}</strong>,</p>
+            <p>Hello <strong>${fullName}</strong>,</p>
             <p>Thank you for registering with Dayflow HRMS. To complete your registration, please verify your email address.</p>
             
             <div style="text-align: center;">

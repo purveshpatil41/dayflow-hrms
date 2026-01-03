@@ -120,12 +120,21 @@ const EmployeeDetail = ({ employeeId, onBack, onUpdate }) => {
 
         <div className="row mb-4">
           <div className="col-md-3 text-center">
-            <div className="profile-avatar rounded-circle bg-gradient d-inline-flex align-items-center justify-content-center text-white mb-3"
-                 style={{ width: '120px', height: '120px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-              <span className="fs-1 fw-bold">
-                {employee.fullName ? employee.fullName.charAt(0).toUpperCase() : 'U'}
-              </span>
-            </div>
+            {employee.profilePicture ? (
+              <img 
+                src={employee.profilePicture} 
+                alt={employee.fullName} 
+                className="rounded-circle mb-3"
+                style={{ width: '120px', height: '120px', objectFit: 'cover', border: '3px solid #667eea' }}
+              />
+            ) : (
+              <div className="profile-avatar rounded-circle bg-gradient d-inline-flex align-items-center justify-content-center text-white mb-3"
+                   style={{ width: '120px', height: '120px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                <span className="fs-1 fw-bold">
+                  {employee.fullName ? employee.fullName.charAt(0).toUpperCase() : 'U'}
+                </span>
+              </div>
+            )}
             <h5 className="fw-bold mb-1">{employee.fullName || 'N/A'}</h5>
             <p className="text-muted mb-2">{employee.employeeId}</p>
             <span className={`badge ${employee.role === 'Admin' ? 'bg-danger' : 'bg-success'}`}>

@@ -8,9 +8,9 @@ const ProfileSection = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [profilePicture, setProfilePicture] = useState('https://via.placeholder.com/150');
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    employeeId: '',
+    fullName: user?.fullName || '',
+    email: user?.email || '',
+    employeeId: user?.employeeId || '',
     phone: '',
     address: '',
     jobTitle: 'Senior Software Engineer',
@@ -200,7 +200,7 @@ const ProfileSection = ({ user }) => {
                   </label>
                 )}
               </div>
-              <h5 className="fw-bold mb-1">{formData.fullName}</h5>
+              <h5 className="fw-bold mb-1">{formData.fullName || formData.email}</h5>
               <p className="text-muted mb-2">{formData.email}</p>
               <span className="badge bg-success">{formData.jobTitle}</span>
               
@@ -234,9 +234,11 @@ const ProfileSection = ({ user }) => {
                   <label className="form-label fw-semibold">Full Name</label>
                   <input
                     type="text"
-                    className="form-control"
+                    name="fullName"
+                    className={`form-control ${isEditMode ? 'border-primary' : ''}`}
                     value={formData.fullName}
-                    disabled
+                    onChange={handleInputChange}
+                    disabled={!isEditMode}
                   />
                 </div>
                 <div className="col-md-6">

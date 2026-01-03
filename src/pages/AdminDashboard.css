@@ -221,3 +221,41 @@
     font-size: 0.8rem;
   }
 }
+
+/* Mobile Sidebar Toggle Button */
+.mobile-sidebar-toggle {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-sidebar-toggle {
+    display: block !important;
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  
+  .dashboard-container {
+    padding: 1rem !important;
+  }
+  
+  .navbar {
+    padding-left: 60px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .stat-card .card-body {
+    padding: 1rem !important;
+  }
+  
+  .welcome-section {
+    padding: 0 !important;
+  }
+  
+  .row.g-4 {
+    gap: 1rem !important;
+  }
+}

@@ -8,11 +8,30 @@
   top: 0 !important;
   z-index: 9999 !important;
   box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3) !important;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
   overflow-y: auto;
+}
+
+.sidebar-overlay {
+  display: none !important;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+  
+  .sidebar-overlay {
+    display: block !important;
+  }
 }
 
 .sidebar-header {

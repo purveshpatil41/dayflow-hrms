@@ -11,6 +11,7 @@ const EmployeeDashboard = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('profile');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
@@ -69,8 +70,16 @@ const EmployeeDashboard = () => {
 
   return (
     <div className="employee-dashboard-wrapper">
+      {/* Mobile overlay */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="sidebar-overlay-emp"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+      
       {/* Fixed Sidebar */}
-      <div className="dashboard-sidebar">
+      <div className={`dashboard-sidebar ${isMobileSidebarOpen ? 'sidebar-open' : ''}`}>
         <div className="sidebar-header p-4">
           <h4 className="mb-0 text-white fw-bold">Dayflow</h4>
           <p className="mb-0 text-white-50 small">HRMS Portal</p>
@@ -80,7 +89,12 @@ const EmployeeDashboard = () => {
           {menuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveSection(item.id)}
+              onClick={() => {
+                setActiveSection(item.id);
+                if (window.innerWidth <= 768) {
+                  setIsMobileSidebarOpen(false);
+                }
+              }}
               className={`sidebar-menu-item ${activeSection === item.id ? 'active' : ''}`}
             >
               <i className={`bi ${item.icon} fs-5 me-3`}></i>
@@ -97,6 +111,14 @@ const EmployeeDashboard = () => {
 
       {/* Main Content Area */}
       <div className="dashboard-main-content">
+        {/* Mobile Toggle Button */}
+        <button
+          className="mobile-sidebar-toggle-emp"
+          onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        >
+          <i className="bi bi-list"></i>
+        </button>
+        
         {/* Top Navbar */}
         <div className="dashboard-navbar">
           <div className="container-fluid px-4 py-3">
@@ -107,11 +129,11 @@ const EmployeeDashboard = () => {
               </div>
               <div className="d-flex align-items-center gap-3">
                 <div className="text-end">
-                  <div className="fw-semibold small">{user.email}</div>
+                  <div className="fw-semibold small" style={{ color: '#333' }}>{user.fullName || user.email}</div>
                   <div className="text-muted" style={{ fontSize: '0.75rem' }}>{user.role}</div>
                 </div>
                 <div className="user-avatar">
-                  <i className="bi bi-person-circle fs-3"></i>
+                  <i className="bi bi-person-circle fs-3" style={{ color: '#667eea' }}></i>
                 </div>
               </div>
             </div>

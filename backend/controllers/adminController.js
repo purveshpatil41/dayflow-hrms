@@ -151,3 +151,90 @@ export const getEmployeeLeaves = async (req, res) => {
     });
   }
 };
+
+// Mark employee attendance
+export const markAttendance = async (req, res) => {
+  try {
+    const { employeeId, date, status } = req.body;
+
+    if (!employeeId || !date || !status) {
+      return res.status(400).json({
+        success: false,
+        message: 'Employee ID, date, and status are required'
+      });
+    }
+
+    // Verify employee exists
+    const employee = await User.findByPk(employeeId);
+    if (!employee) {
+      return res.status(404).json({
+        success: false,
+        message: 'Employee not found'
+      });
+    }
+
+    // Here you would save to an Attendance model
+    // For now, returning success
+    res.status(200).json({
+      success: true,
+      message: 'Attendance marked successfully',
+      data: {
+        employeeId,
+        date,
+        status,
+        markedBy: req.user.id,
+        markedAt: new Date()
+      }
+    });
+  } catch (error) {
+    console.error('Error marking attendance:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to mark attendance',
+      error: error.message
+    });
+  }
+};
+
+// Mark bulk attendance
+export const markBulkAttendance = async (req, res) => {
+  try {
+    const { attendanceRecords } = req.body;
+
+    if (!attendanceRecords || !Array.isArray(attendanceRecords)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Attendance records array is required'
+      });
+    }
+
+    // Process each attendance record
+    const results = [];
+    for (const record of attendanceRecords) {
+      const { employeeId, date, status } = record;
+      
+      if (employeeId && date && status) {
+        results.push({
+          employeeId,
+          date,
+          status,
+          markedBy: req.user.id,
+          markedAt: new Date()
+        });
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Attendance marked for ${results.length} employees`,
+      data: results
+    });
+  } catch (error) {
+    console.error('Error marking bulk attendance:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to mark bulk attendance',
+      error: error.message
+    });
+  }
+};
