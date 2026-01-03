@@ -27,15 +27,25 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      console.log('Attempting login for:', loginForm.email);
       const response = await authService.login(loginForm);
+      console.log('Login response:', response);
       if (response.success) {
         toast.success('Login successful! Redirecting...');
         console.log('Login Successful', response.data);
+        
+        const userRole = response.data.user.role;
+        const redirectPath = userRole === 'Admin' || userRole === 'HR' 
+          ? '/admin/dashboard' 
+          : '/employee/dashboard';
+        
         setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 2000);
+          window.location.href = redirectPath;
+        }, 1500);
       }
     } catch (error) {
+      console.error('Login error:', error);
+      console.error('Error response:', error.response);
       toast.error(error.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);

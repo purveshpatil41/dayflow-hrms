@@ -42,6 +42,22 @@ const User = sequelize.define(
       type: DataTypes.ENUM('Employee', 'Admin'),
       defaultValue: 'Employee',
     },
+    fullName: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+    },
+    phone: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
+    address: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    profilePicture: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     isVerified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,

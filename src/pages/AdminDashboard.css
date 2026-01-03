@@ -1,0 +1,57 @@
+.analytics-card {
+  transition: all 0.3s ease;
+}
+
+.analytics-card:hover {
+  background: #f8f9fa;
+  border-color: #667eea !important;
+  transform: translateY(-5px);
+}
+
+.analytics-icon {
+  width: 70px;
+  height: 70px;
+}
+
+.avatar-sm {
+  width: 35px;
+  height: 35px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.table-hover tbody tr {
+  transition: all 0.3s ease;
+}
+
+.table-hover tbody tr:hover {
+  background: #f8f9fa;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.leave-request-card {
+  transition: all 0.3s ease;
+}
+
+.leave-request-card:hover {
+  background: #f8f9fa;
+  border-color: #667eea !important;
+  transform: translateX(5px);
+}
+
+.payroll-breakdown > div {
+  transition: all 0.3s ease;
+}
+
+.payroll-breakdown > div:hover {
+  background: #f8f9fa;
+  border-color: #667eea !important;
+  transform: translateX(5px);
+}
+
+@media (max-width: 768px) {
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+}

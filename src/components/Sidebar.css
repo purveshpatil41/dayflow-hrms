@@ -1,0 +1,47 @@
+.sidebar {
+  width: 280px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+}
+
+.sidebar-header {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu {
+  margin-top: 1rem;
+}
+
+.sidebar-item {
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background: transparent;
+}
+
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  transform: translateX(5px);
+}
+
+.sidebar-item.active {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-item.logout-btn {
+  margin-top: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: left;
+}
+
+.sidebar-item.logout-btn:hover {
+  background: rgba(255, 0, 0, 0.2);
+  color: white;
+}

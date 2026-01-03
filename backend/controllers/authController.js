@@ -268,6 +268,8 @@ export const verifyOTP = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    
+    console.log('Login attempt for:', email);
 
     if (!email || !password) {
       return res.status(400).json({
@@ -279,6 +281,7 @@ export const login = async (req, res) => {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
+      console.log('User not found:', email);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials',
@@ -294,6 +297,8 @@ export const login = async (req, res) => {
     // }
 
     const isPasswordMatch = await user.matchPassword(password);
+    
+    console.log('Password match result:', isPasswordMatch);
 
     if (!isPasswordMatch) {
       return res.status(401).json({
@@ -303,6 +308,8 @@ export const login = async (req, res) => {
     }
 
     const token = generateToken(user.id);
+    
+    console.log('Login successful for:', email);
 
     res.status(200).json({
       success: true,
@@ -314,6 +321,10 @@ export const login = async (req, res) => {
           employeeId: user.employeeId,
           email: user.email,
           role: user.role,
+          fullName: user.fullName,
+          phone: user.phone,
+          address: user.address,
+          profilePicture: user.profilePicture,
         },
       },
     });
@@ -342,6 +353,47 @@ export const getMe = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Server error',
+      error: error.message,
+    });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { fullName, phone, address, profilePicture } = req.body;
+
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Update fields if provided
+    if (fullName !== undefined) user.fullName = fullName;
+    if (phone !== undefined) user.phone = phone;
+    if (address !== undefined) user.address = address;
+    if (profilePicture !== undefined) user.profilePicture = profilePicture;
+
+    await user.save();
+
+    // Return updated user without password
+    const updatedUser = await User.findByPk(req.user.id, {
+      attributes: { exclude: ['password'] },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during profile update',
       error: error.message,
     });
   }
