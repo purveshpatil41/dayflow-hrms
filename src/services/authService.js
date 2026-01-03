@@ -1,21 +1,12 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/auth';
-
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import { apiClient, API_ENDPOINTS } from './api.js';
 
 export const register = async (userData) => {
-  const response = await api.post('/register', userData);
+  const response = await apiClient.post(API_ENDPOINTS.auth.register, userData);
   return response.data;
 };
 
 export const login = async (credentials) => {
-  const response = await api.post('/login', credentials);
+  const response = await apiClient.post(API_ENDPOINTS.auth.login, credentials);
   if (response.data.success) {
     localStorage.setItem('token', response.data.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.data.user));

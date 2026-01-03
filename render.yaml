@@ -1,0 +1,54 @@
+services:
+  # Backend API Service
+  - type: web
+    name: dayflow-hrms-backend
+    runtime: node
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_HOST
+        fromDatabase:
+          name: dayflow-mysql
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: dayflow-mysql
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: dayflow-mysql
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: dayflow-mysql
+          property: database
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE
+        value: 7d
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: FRONTEND_URL
+        value: https://dayflow-hrms.onrender.com
+    autoDeploy: true
+
+databases:
+  - name: dayflow-mysql
+    databaseName: dayflow_hrms
+    user: dayflow_user
+    plan: free
+    region: oregon

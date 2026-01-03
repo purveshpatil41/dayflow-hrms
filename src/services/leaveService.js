@@ -1,15 +1,4 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/leaves';
-
-const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-};
+import { apiClient, API_ENDPOINTS } from './api.js';
 
 export const applyLeave = async (leaveData) => {
   const response = await axios.post(`${API_URL}/apply`, leaveData, getAuthHeader());

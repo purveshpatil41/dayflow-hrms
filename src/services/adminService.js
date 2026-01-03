@@ -1,16 +1,4 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/admin';
-
-const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-  };
-};
+import { apiClient, API_ENDPOINTS } from './api.js';
 
 export const getAllEmployees = async () => {
   try {
