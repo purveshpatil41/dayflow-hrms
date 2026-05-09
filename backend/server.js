@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
     success: true,
     message: 'Dayflow HRMS API is running',
     version: '1.0.0',
-    database: 'MySQL',
+    database: process.env.DB_DIALECT || 'mysql',
   });
 });
 
